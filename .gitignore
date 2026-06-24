@@ -1,0 +1,14 @@
+# Mechanism build
+x86_64/
+
+# Benchmark and single-run outputs
+results/
+out1.dat
+out1_*.dat
+perf.dat
+
+# Local diagnostics (not part of the harness)
+cs0.0.1*
+prcellstate_diag.hoc
+prcellstate_psolve.hoc
+test_permute_gpu.hoc

@@ -1,4 +1,5 @@
 # Benchmark configuration for nrntraub (ModelDB 82894).
+# See BENCHMARK.md for build (nrnivmodl -coreneuron mod) and run instructions.
 # Site-specific paths go here; run_benchmark.py stays portable.
 
 model_dir: "."
