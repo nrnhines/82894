@@ -1,0 +1,49 @@
+# Benchmark configuration for nrntraub (ModelDB 82894).
+# Site-specific paths go here; run_benchmark.py stays portable.
+
+model_dir: "."
+
+# NEURON install bin (sortspike, nmodl helpers). Override on other clusters.
+nrn_bin: "/home/hines/neuron/core-neuron-gpu/build-gpu-grok/install/bin"
+
+special: "./x86_64/special"
+sortspike: "sortspike"
+
+reference_case: neuron_cpu
+output_dir: results
+
+env:
+  OMP_NUM_THREADS: "1"
+  NVHPC_BIN: "/opt/nvidia/hpc_sdk/Linux_x86_64/25.9/compilers/bin"
+
+# Shared HOC defaults for all cases (case hoc: entries override these).
+hoc_defaults:
+  mytstop: 100
+  one_tenth_ncell: 1
+  use_gap: 0
+  nthread: 1
+  coreneuron: 0
+  benchmark_quiet: 1
+
+cases:
+  - name: neuron_cpu
+    hoc:
+      enable_gpu: 0
+
+  - name: neuron_gpu_native
+    hoc:
+      enable_gpu: 1
+      # gpu_backend defaults to "native" in init.hoc (NEURON -c cannot set strings)
+      gpu_download_flush: 1
+
+  - name: coreneuron_cpu
+    hoc:
+      enable_gpu: 0
+      coreneuron: 1
+      coreneuron_gpu: 0
+
+  - name: coreneuron_gpu
+    hoc:
+      enable_gpu: 0
+      coreneuron: 1
+      coreneuron_gpu: 1
