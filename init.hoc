@@ -29,6 +29,11 @@ default_var("msoptfactor", 0.8)
 default_var("nthread", 1)
 default_var("savestatetest", 0)
 default_var("coreneuron", 0)
+default_var("coreneuron_gpu", 0)
+default_var("enable_gpu", 0)
+default_var("gpu_backend", "native")
+default_var("gpu_download_flush", 1)
+default_var("benchmark_quiet", 0)
 
 default_var("spike_compress", 5)
 default_var("cacheeffic", 1)  // for multisplit it is always 1
@@ -64,10 +69,25 @@ if (coreneuron) {
     if (nrnpython("")) {
         nrnpython("from neuron import coreneuron")
         nrnpython("coreneuron.enable = True")
-        nrnpython("coreneuron.permute = 1")
+        if (coreneuron_gpu) {
+            nrnpython("coreneuron.gpu = True")
+            nrnpython("coreneuron.permute = 2")
+        } else {
+            nrnpython("coreneuron.gpu = False")
+            nrnpython("coreneuron.permute = 1")
+        }
     } else {
         execerror("coreneuron not installed")
     }
+}
+
+if (enable_gpu) {
+    if (coreneuron) {
+        execerror("enable_gpu=1 is native GPU only; use coreneuron_gpu=1 for CoreNEURON GPU")
+    }
+    pc.gpu_enable(1)
+    pc.gpu_backend(gpu_backend)
+    pc.gpu_download_flush_interval(gpu_download_flush)
 }
 
 prun()
@@ -78,6 +98,10 @@ endtime = startsw()
 
 if (pc.id == 0) { print "tstop = ", tstop }
 if (pc.id == 0) { print "RunTime: ", runtime }
+if (pc.id == 0) {
+    printf("BENCHMARK runtime=%g setuptime=%g ncell=%d enable_gpu=%d nhost=%d\n", \
+        runtime, setuptime, pnm.ncell, enable_gpu, pnm.nhost)
+}
 
 //{localloadfile("prcellstate.hoc")}
 proc pcs() {local spgid
@@ -89,13 +113,15 @@ proc pcs() {local spgid
 
 spike2file()
 
-if (pc.nhost > 5) {cvode_active(1)} // to count equations
-{pc.runworker()}
+getstat() // perf2file() needs tavg_stat even when benchmark_quiet=1
+if (!benchmark_quiet) {
+    if (pc.nhost > 5) {cvode_active(1)} // to count equations
+    {pc.runworker()}
 
-print "Maximum integration interval: ", mindelay()
-getstat()
-prhist()
-print_spike_stat_info()
+    print "Maximum integration interval: ", mindelay()
+    prhist()
+    print_spike_stat_info()
+}
 
 {pc.done()}
 

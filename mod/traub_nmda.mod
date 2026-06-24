@@ -35,10 +35,6 @@ PARAMETER {
 	NMDA_saturation_fact= 80e0 (1) : this saturation factor is multiplied into
 		: the conductance scale, weight, for testing against the
 		: instantaneous conductance, to see if it should be limited.
-: FORTRAN nmda subroutine constants and variables here end with underbar 
-	A_ = 0 (1) : initialized with below in INITIAL, assigned in each integrate_celltype.f
-	BB1_ = 0 (1) : assigned in each integrate_celltype.f
-	BB2_ = 0 (1) : assigned in each integrate_celltype.f
 	Mg = 1.5 (mM) : a FORTRAN variable set in groucho.f
 	gfac = 1
 }
@@ -49,6 +45,10 @@ ASSIGNED {
 	event_count (1)	: counts number of syn events being processed
 	k (uS/ms) : slope of ramp or 0
 	g (uS)
+: FORTRAN nmda subroutine constants; writable (set in INITIAL)
+	A_ (1)
+	BB1_ (1)
+	BB2_ (1)
 	A1_ (1)
 	A2_ (1)
 	B1_ (1)

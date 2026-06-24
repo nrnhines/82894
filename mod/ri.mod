@@ -23,10 +23,13 @@ ENDCOMMENT
 NEURON { SUFFIX nothing }
 
 VERBATIM
+#ifndef NRNBBCORE
 const char* secname();
+#endif
 ENDVERBATIM
 
 VERBATIM
+#ifndef NRNBBCORE
 #ifndef _NrnThread
 #define _NrnThread NrnThread
 #endif
@@ -39,10 +42,12 @@ VERBATIM
 #define get_node(sec, node_index) sec->pnode[node_index]
 #define get_thread(node) node->_nt
 #endif
+#endif
 ENDVERBATIM
 
 PROCEDURE scale_connection_coef(x, factor) {
 VERBATIM {
+#ifndef NRNBBCORE
 	Section* sec;
 	Node* nd;
 #if defined(t)
@@ -65,6 +70,7 @@ VERBATIM {
 	/*printf("%g %g\n", NODEA(nd), NODEB(nd));*/
 	NODEA(nd) *= _lfactor;
 	NODEB(nd) *= _lfactor;
+#endif
 }
 ENDVERBATIM
 }
